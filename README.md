@@ -2,7 +2,7 @@
 
 A project to implement Tinder approach to state management.
 
-## Input Flight Info Flow
+## Flight Product Flow
 
 * Select flight
     * Loading flights
