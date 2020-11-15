@@ -41,7 +41,7 @@ class FlightProductFlowFSM extends FSMWrapper<FlightProductFlowState,
         (b) => b
           ..on<OnSelectFlightCompleted>(
             (FlightSelect s, OnSelectFlightCompleted e) => b.transitionTo(
-              PassengerCountSelect(),
+              PassengerCountSelect(flight: e.flight),
             ),
           ),
       )
@@ -50,7 +50,8 @@ class FlightProductFlowFSM extends FSMWrapper<FlightProductFlowState,
           ..on<OnPassengerCountSelected>(
             (PassengerCountSelect s, OnPassengerCountSelected e) =>
                 b.transitionTo(
-              ContactInfoInput(),
+              FlightProductFlowCompleted(
+                  flight: s.flight, passengerCount: e.passengerCount),
             ),
           )
           ..on<OnUserGoBack>(
@@ -59,21 +60,13 @@ class FlightProductFlowFSM extends FSMWrapper<FlightProductFlowState,
             ),
           ),
       )
-      ..state<ContactInfoInput>(
+      ..state<FlightProductFlowCompleted>(
         (b) => b
-          ..on<OnContactInputDone>(
-            (ContactInfoInput s, OnContactInputDone e) => b.transitionTo(
-              FlightProductFlowCompleted(),
-            ),
-          )
           ..on<OnUserGoBack>(
-            (ContactInfoInput s, OnUserGoBack e) => b.transitionTo(
-              PassengerCountSelect(),
+            (s, e) => b.transitionTo(
+              PassengerCountSelect(flight: s.flight),
             ),
           ),
-      )
-      ..state<FlightProductFlowCompleted>(
-        (b) {},
       );
   }
 
@@ -81,15 +74,26 @@ class FlightProductFlowFSM extends FSMWrapper<FlightProductFlowState,
   void handleSideEffect(FlightProductFlowSideEffect sideEffect) {}
 }
 
-abstract class FlightProductFlowState {}
+abstract class FlightProductFlowState {
+  final Flight flight;
+  final int passengerCount;
+
+  FlightProductFlowState({this.flight, this.passengerCount});
+}
 
 class FlightSelect extends FlightProductFlowState {}
 
-class PassengerCountSelect extends FlightProductFlowState {}
+class PassengerCountSelect extends FlightProductFlowState {
+  PassengerCountSelect({Flight flight}) : super(flight: flight);
+}
 
-class ContactInfoInput extends FlightProductFlowState {}
-
-class FlightProductFlowCompleted extends FlightProductFlowState {}
+class FlightProductFlowCompleted extends FlightProductFlowState {
+  FlightProductFlowCompleted({Flight flight, int passengerCount})
+      : super(
+          flight: flight,
+          passengerCount: passengerCount,
+        );
+}
 
 abstract class FlightProductFlowEvent {}
 
@@ -104,8 +108,6 @@ class OnPassengerCountSelected extends FlightProductFlowEvent {
 
   OnPassengerCountSelected(this.passengerCount);
 }
-
-class OnContactInputDone extends FlightProductFlowEvent {}
 
 class OnCompleted extends FlightProductFlowEvent {}
 

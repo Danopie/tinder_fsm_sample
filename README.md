@@ -12,10 +12,6 @@ A project to implement Tinder approach to state management.
     * Loading passenger threshold
     * Idle
     * Completed
-* Enter contact info
-    * Idle
-    * Validating
-    * Completed
 * Process Payment
     * Load payment data
     * Verify payment data

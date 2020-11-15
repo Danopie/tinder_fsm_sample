@@ -5,6 +5,8 @@ import 'package:tinder_fsm_sample/core/fsm_builder.dart';
 import 'package:tinder_fsm_sample/flight_product_flow/enter_passenger_count/enter_passenger_count_page.dart';
 import 'package:tinder_fsm_sample/flight_product_flow/flight_product_flow_fsm.dart';
 import 'package:tinder_fsm_sample/flight_product_flow/select_flight/flight_select_page.dart';
+import 'package:tinder_fsm_sample/model/flight_purchase_data.dart';
+import 'package:tinder_fsm_sample/payment/payment_flow.dart';
 
 class FlightProductFlowCoordinator extends StatefulHookWidget {
   @override
@@ -13,6 +15,8 @@ class FlightProductFlowCoordinator extends StatefulHookWidget {
 }
 
 final routeObserverProvider = ScopedProvider<RouteObserver>(null);
+
+final flightPurchaseDataProvider = ScopedProvider<FlightPurchaseData>(null);
 
 class _FlightProductFlowCoordinatorState
     extends State<FlightProductFlowCoordinator> {
@@ -30,16 +34,16 @@ class _FlightProductFlowCoordinatorState
           child: Navigator(
             observers: [_observer],
             pages: [
-              if (state is FlightSelect ||
-                  state is PassengerCountSelect ||
-                  state is ContactInfoInput)
+              if (state is FlightSelect || state is PassengerCountSelect)
                 MaterialPage(child: FlightSelectPage()),
-              if (state is PassengerCountSelect || state is ContactInfoInput)
+              if (state is PassengerCountSelect ||
+                  state is FlightProductFlowCompleted)
                 MaterialPage(child: PassengerCountPage()),
-              if (state is ContactInfoInput)
+              if (state is FlightProductFlowCompleted)
                 MaterialPage(
-                  child: Scaffold(
-                    body: Center(child: Text("Contact input")),
+                  child: PaymentFlowCoordinator(
+                    data:
+                        FlightPurchaseData(state.flight, state.passengerCount),
                   ),
                 ),
             ],
