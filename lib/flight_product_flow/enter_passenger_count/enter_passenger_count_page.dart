@@ -7,8 +7,6 @@ import 'package:tinder_fsm_sample/flight_product_flow/enter_passenger_count/ente
 import 'package:tinder_fsm_sample/flight_product_flow/flight_product_flow.dart';
 
 class PassengerCountPage extends HookWidget {
-  PassengerCountPage();
-
   @override
   Widget build(BuildContext context) {
     useReturnListener(context, useProvider(routeObserverProvider), () {

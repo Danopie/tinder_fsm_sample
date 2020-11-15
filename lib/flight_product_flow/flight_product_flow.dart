@@ -34,7 +34,9 @@ class _FlightProductFlowCoordinatorState
           child: Navigator(
             observers: [_observer],
             pages: [
-              if (state is FlightSelect || state is PassengerCountSelect)
+              if (state is FlightSelect ||
+                  state is PassengerCountSelect ||
+                  state is FlightProductFlowCompleted)
                 MaterialPage(child: FlightSelectPage()),
               if (state is PassengerCountSelect ||
                   state is FlightProductFlowCompleted)
