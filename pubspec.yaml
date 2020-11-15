@@ -32,6 +32,7 @@ dependencies:
   fsm: ^0.0.5
   equatable: ^1.2.5
   meta: ^1.1.7
+  flutter_hooks: any
 
 dev_dependencies:
   flutter_test:

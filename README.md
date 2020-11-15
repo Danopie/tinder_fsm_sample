@@ -16,15 +16,12 @@ A project to implement Tinder approach to state management.
     * Idle
     * Validating
     * Completed
+* Process Payment
+    * Load payment data
+    * Verify payment data
+    * Pending for confirm
+    * Charge purchase
+    * Verify receipt
+    * Completed
 * Completed
-
-## Process Payment Flow
-
-* Load payment data
-* Verify payment data
-* Pending for confirm
-* Charge purchase
-* Verify receipt
-* Completed
-
 

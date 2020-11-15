@@ -46,21 +46,22 @@ class SelectFlightFSM extends FSMWrapper<FlightSelectState, FlightSelectEvent,
             ),
           ),
       )
-      ..state<FlightSelectCompleted>((b) {})
+      ..state<FlightSelectCompleted>(
+        (b) => b
+          ..on<OnUserGoBack>(
+            (s, e) => b.transitionTo(
+              FlightListing(flights: s.flights),
+            ),
+          ),
+      )
       ..state<LoadingError>((b) => b
         ..onEnter((s) => print('Entering ${s.runtimeType} state'))
-        ..onExit((s) => print('Exiting ${s.runtimeType} state')))
-      ..onTransition(
-        (t) {
-          t.match((v) => _handleSideEffects(v.sideEffect), (_) {});
-        },
-      );
+        ..onExit((s) => print('Exiting ${s.runtimeType} state')));
   }
 
-  Future<void> _handleSideEffects(
-    FlightSelectSideEffect v,
-  ) async {
-    if (v is LoadFlights) {
+  @override
+  Future<void> handleSideEffect(FlightSelectSideEffect sideEffect) async {
+    if (sideEffect is LoadFlights) {
       final flights = List<Flight>.generate(
           10, (index) => Flight("ID $index", "Flight No.$index"));
       await Future.delayed(Duration(seconds: 1));
@@ -135,6 +136,11 @@ class OnFlightLoadSuccess extends FlightSelectEvent {
 }
 
 class OnFlightLoadFailed extends FlightSelectEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class OnUserGoBack extends FlightSelectEvent {
   @override
   List<Object> get props => [];
 }

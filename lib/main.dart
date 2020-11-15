@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:tinder_fsm_sample/flight_product_flow/select_flight/select_flight.dart';
+import 'package:tinder_fsm_sample/flight_product_flow/flight_product_flow.dart';
 
 void main() {
   runApp(ProviderScope(child: MyApp()));
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: FlightSelectPage(),
+      home: FlightProductFlowCoordinator(),
     );
   }
 }
