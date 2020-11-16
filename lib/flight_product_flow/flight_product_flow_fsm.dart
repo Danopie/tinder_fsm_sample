@@ -4,17 +4,27 @@ import 'package:tinder_fsm_sample/core/fsm_wrapper.dart';
 import 'package:tinder_fsm_sample/flight_product_flow/enter_passenger_count/enter_passenger_count_fsm.dart';
 import 'package:tinder_fsm_sample/flight_product_flow/select_flight/select_flight_fsm.dart';
 import 'package:tinder_fsm_sample/model/flight.dart';
+import 'package:tinder_fsm_sample/payment/payment_flow_fsm.dart';
 
-final flightProductFlowFSM = Provider.autoDispose((ref) => FlightProductFlowFSM(
+final flightProductFlowFSM = Provider.autoDispose(
+  (ref) {
+    print('create flightProductFlowFSM');
+    return FlightProductFlowFSM(
     selectFlightFSM: ref.read(selectFlightFSMProvider),
-    passengerCountFSM: ref.read(enterPassengerCountFSMProvider)));
+    passengerCountFSM: ref.read(enterPassengerCountFSMProvider),
+    paymentFlowFSM: ref.read(paymentFlowFSM),
+  );
+  },
+);
 
 class FlightProductFlowFSM extends FSMWrapper<FlightProductFlowState,
     FlightProductFlowEvent, FlightProductFlowSideEffect> {
   final SelectFlightFSM selectFlightFSM;
   final EnterPassengerCountFSM passengerCountFSM;
+  final PaymentFlowFSM paymentFlowFSM;
 
-  FlightProductFlowFSM({this.selectFlightFSM, this.passengerCountFSM}) {
+  FlightProductFlowFSM(
+      {this.selectFlightFSM, this.passengerCountFSM, this.paymentFlowFSM}) {
     selectFlightFSM.state.listen((selectFlightState) {
       if (selectFlightState is FlightSelectCompleted) {
         machine.transition(
@@ -26,6 +36,13 @@ class FlightProductFlowFSM extends FSMWrapper<FlightProductFlowState,
       if (passengerCountState is PassengerCountCompeted) {
         machine.transition(OnPassengerCountSelected(
             passengerCountState.selectedPassengerCount));
+      }
+    });
+
+    paymentFlowFSM.state.listen((paymentFlowState) {
+      if (paymentFlowState is PaymentCompleted) {
+        machine.transition(OnFlightPaymentCompleted(
+            machine.currentState.flight, machine.currentState.passengerCount));
       }
     });
   }
@@ -50,7 +67,7 @@ class FlightProductFlowFSM extends FSMWrapper<FlightProductFlowState,
           ..on<OnPassengerCountSelected>(
             (PassengerCountSelect s, OnPassengerCountSelected e) =>
                 b.transitionTo(
-              FlightProductFlowCompleted(
+              FlightPaymentProcess(
                   flight: s.flight, passengerCount: e.passengerCount),
             ),
           )
@@ -60,13 +77,24 @@ class FlightProductFlowFSM extends FSMWrapper<FlightProductFlowState,
             ),
           ),
       )
-      ..state<FlightProductFlowCompleted>(
+      ..state<FlightPaymentProcess>(
         (b) => b
           ..on<OnUserGoBack>(
             (s, e) => b.transitionTo(
               PassengerCountSelect(flight: s.flight),
             ),
+          )
+          ..on<OnFlightPaymentCompleted>(
+            (s, e) => b.transitionTo(
+              FlightProductFlowCompleted(
+                flight: e.flight,
+                passengerCount: s.passengerCount,
+              ),
+            ),
           ),
+      )
+      ..state<FlightProductFlowCompleted>(
+        (b) => b,
       );
   }
 
@@ -85,6 +113,11 @@ class FlightSelect extends FlightProductFlowState {}
 
 class PassengerCountSelect extends FlightProductFlowState {
   PassengerCountSelect({Flight flight}) : super(flight: flight);
+}
+
+class FlightPaymentProcess extends FlightProductFlowState {
+  FlightPaymentProcess({Flight flight, int passengerCount})
+      : super(flight: flight, passengerCount: passengerCount);
 }
 
 class FlightProductFlowCompleted extends FlightProductFlowState {
@@ -109,7 +142,12 @@ class OnPassengerCountSelected extends FlightProductFlowEvent {
   OnPassengerCountSelected(this.passengerCount);
 }
 
-class OnCompleted extends FlightProductFlowEvent {}
+class OnFlightPaymentCompleted extends FlightProductFlowEvent {
+  final Flight flight;
+  final int passengerCount;
+
+  OnFlightPaymentCompleted(this.flight, this.passengerCount);
+}
 
 class OnUserGoBack extends FlightProductFlowEvent {}
 

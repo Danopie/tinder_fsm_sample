@@ -16,8 +16,6 @@ class FlightProductFlowCoordinator extends StatefulHookWidget {
 
 final routeObserverProvider = ScopedProvider<RouteObserver>(null);
 
-final flightPurchaseDataProvider = ScopedProvider<FlightPurchaseData>(null);
-
 class _FlightProductFlowCoordinatorState
     extends State<FlightProductFlowCoordinator> {
   final _observer = RouteObserver();
@@ -27,6 +25,7 @@ class _FlightProductFlowCoordinatorState
     return FSMBuilder(
       fsm: useProvider(flightProductFlowFSM),
       builder: (context, state) {
+        print('_FlightProductFlowCoordinatorState.build: ${state}');
         return ProviderScope(
           overrides: [
             routeObserverProvider.overrideWithValue(_observer),
@@ -36,12 +35,13 @@ class _FlightProductFlowCoordinatorState
             pages: [
               if (state is FlightSelect ||
                   state is PassengerCountSelect ||
-                  state is FlightProductFlowCompleted)
+                  state is FlightPaymentProcess)
                 MaterialPage(child: FlightSelectPage()),
               if (state is PassengerCountSelect ||
-                  state is FlightProductFlowCompleted)
+                  state is FlightPaymentProcess)
                 MaterialPage(child: PassengerCountPage()),
-              if (state is FlightProductFlowCompleted)
+              if (state is FlightPaymentProcess ||
+                  state is FlightProductFlowCompleted)
                 MaterialPage(
                   child: PaymentFlowCoordinator(
                     data:
