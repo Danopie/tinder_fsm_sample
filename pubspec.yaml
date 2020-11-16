@@ -33,6 +33,7 @@ dependencies:
   equatable: ^1.2.5
   meta: ^1.1.7
   flutter_hooks: any
+  mockito: ^4.1.3
 
 dev_dependencies:
   flutter_test:
