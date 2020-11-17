@@ -10,10 +10,10 @@ final flightProductFlowFSM = Provider.autoDispose(
   (ref) {
     print('create flightProductFlowFSM');
     return FlightProductFlowFSM(
-    selectFlightFSM: ref.read(selectFlightFSMProvider),
-    passengerCountFSM: ref.read(enterPassengerCountFSMProvider),
-    paymentFlowFSM: ref.read(paymentFlowFSM),
-  );
+      selectFlightFSM: ref.watch(selectFlightFSMProvider),
+      passengerCountFSM: ref.watch(enterPassengerCountFSMProvider),
+      paymentFlowFSM: ref.watch(paymentFlowFSM),
+    );
   },
 );
 

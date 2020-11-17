@@ -3,9 +3,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:tinder_fsm_sample/core/fsm_wrapper.dart';
 import 'package:tinder_fsm_sample/model/flight_purchase_data.dart';
 
-final paymentFlowFSM = Provider<PaymentFlowFSM>(
+final paymentFlowFSM = Provider.autoDispose<PaymentFlowFSM>(
   (ref) {
-    print('create paymentFlowFSM');
     return PaymentFlowFSM();
   },
 );

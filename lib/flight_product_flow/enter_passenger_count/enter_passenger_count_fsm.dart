@@ -3,7 +3,7 @@ import 'package:fsm/fsm.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:tinder_fsm_sample/core/fsm_wrapper.dart';
 
-final enterPassengerCountFSMProvider = Provider<EnterPassengerCountFSM>(
+final enterPassengerCountFSMProvider = Provider.autoDispose<EnterPassengerCountFSM>(
   (ref) {
     return EnterPassengerCountFSM()..transition(OnInit());
   },
